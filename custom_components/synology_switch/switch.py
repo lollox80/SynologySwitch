@@ -45,7 +45,7 @@ class Synology:
         })
         sid = ""
         try:
-            resp = requests.get(self.url + "/webapi/auth.cgi?" + params, verify=self.secure)
+            resp = requests.get(self.url + "/webapi/auth.cgi?" + params, verify=self.secure, timeout=self.timeout)
             sid = resp.json()["data"]["sid"]
             self.auth["time"] = int(time.time())
         except Exception as e:
@@ -55,18 +55,22 @@ class Synology:
         return sid != ""
 
     def shutdown(self):
-        self.login()
-        api_url = self.version >= 6 and "/webapi/entry.cgi?" or "/webapi/dsm/system.cgi?"
+        if not self.login():
+            _LOGGER.error("Shutdown failed: login unsuccessful")
+            return False
+        api_url = "/webapi/entry.cgi?" if self.version >= 6 else "/webapi/dsm/system.cgi?"
         params = urllib.parse.urlencode({
-            "api": self.version >= 6 and "SYNO.Core.System" or "SYNO.DSM.System",
+            "api": "SYNO.Core.System" if self.version >= 6 else "SYNO.DSM.System",
             "method": "shutdown",
             "version": "1",
             "_sid": self.auth["sid"]
         })
         try:
-            resp = requests.get(self.url + api_url + params, verify=self.secure)
+            resp = requests.get(self.url + api_url + params, verify=self.secure, timeout=self.timeout)
+            return True
         except Exception as e:
             _LOGGER.error("Shutdown failed: %s", e)
+            return False
 
     def get_power_state(self):
         try:
@@ -94,7 +98,7 @@ class SynologySwitchEntity(SwitchEntity):
         self.password = config_entry.data[CONF_PASSWORD]
         self.secure = config_entry.data.get(SECURE, False)
         self.timeout = config_entry.data.get(TIMEOUT, 5)
-        self.version = config_entry.data.get(CONF_VERSION, 6)
+        self.version = config_entry.data.get(CONF_VERSION, 7)
         self.synology = Synology(
             self.url, self.mac, self.username, self.password,
             self.secure, self.timeout, self.version
