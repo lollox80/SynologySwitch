@@ -1,6 +1,7 @@
 from wakeonlan import send_magic_packet
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
+from homeassistant.helpers.device_registry import DeviceInfo
 from .const import DOMAIN, URL, MAC, SECURE, TIMEOUT, CONF_VERSION
 import urllib
 import requests
@@ -100,8 +101,15 @@ class SynologySwitchEntity(SwitchEntity):
         )
         self._is_on = False
         mac_clean = self.mac.replace(":", "").replace("-", "")
-        self._attr_unique_id = f"synology_{mac_clean}"
-        self._attr_name = f"Synology {self.mac[:17]}"
+        self._attr_unique_id = f"synology_{mac_clean}_power"
+        self._attr_name = "Power"
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, mac_clean)},
+            name=f"Synology NAS ({self.mac[:17]})",
+            manufacturer="Synology",
+            model="DiskStation",
+            configuration_url=self.url,
+        )
 
     @property
     def available(self):
