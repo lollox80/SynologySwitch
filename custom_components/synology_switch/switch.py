@@ -55,9 +55,7 @@ class Synology:
         return sid != ""
 
     def shutdown(self):
-        if not self.login():
-            _LOGGER.error("Shutdown failed: login unsuccessful")
-            return False
+        self.login()
         api_url = "/webapi/entry.cgi?" if self.version >= 6 else "/webapi/dsm/system.cgi?"
         params = urllib.parse.urlencode({
             "api": "SYNO.Core.System" if self.version >= 6 else "SYNO.DSM.System",
@@ -67,10 +65,8 @@ class Synology:
         })
         try:
             resp = requests.get(self.url + api_url + params, verify=self.secure, timeout=self.timeout)
-            return True
         except Exception as e:
             _LOGGER.error("Shutdown failed: %s", e)
-            return False
 
     def get_power_state(self):
         try:
@@ -106,7 +102,8 @@ class SynologySwitchEntity(SwitchEntity):
         self._is_on = False
         mac_clean = self.mac.replace(":", "").replace("-", "")
         self._attr_unique_id = f"synology_{mac_clean}_power"
-        self._attr_name = "Power"
+        self._attr_translation_key = "power"
+        self._attr_has_entity_name = True
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, mac_clean)},
             name=f"Synology NAS ({self.mac[:17]})",

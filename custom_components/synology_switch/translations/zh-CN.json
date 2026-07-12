@@ -1,0 +1,31 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "添加群晖开关",
+        "description": "配置您的群晖 DiskStation 以进行电源控制。",
+        "data": {
+          "url": "DSM 地址（例如：https://192.168.1.2:5001）",
+          "mac": "MAC 地址",
+          "username": "用户名",
+          "password": "密码",
+          "secure": "验证 SSL 证书",
+          "timeout": "超时时间（秒）",
+          "version": "DSM 版本（5、6 或 7）"
+        }
+      }
+    },
+    "error": {
+      "invalid_mac": "MAC 地址格式无效",
+      "connection_error": "无法连接到群晖",
+      "unknown_error": "发生未知错误"
+    }
+  },
+  "entity": {
+    "switch": {
+      "power": {
+        "name": "电源"
+      }
+    }
+  }
+}
