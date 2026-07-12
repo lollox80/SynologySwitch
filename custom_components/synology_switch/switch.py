@@ -1,35 +1,16 @@
 from wakeonlan import send_magic_packet
 from homeassistant.components.switch import SwitchEntity
-import urllib, requests, time, random, string, logging, time
-from homeassistant.const import ATTR_ENTITY_ID, CONF_HOST, CONF_NAME, CONF_TOKEN
-DATA_KEY = "switch.synology"
-URL = "url"
-MAC = "mac"
-USERNAME = "username"
-PASSWORD = "password"
-SECURE = "secure"
-TIMEOUT = "timeout"
-VERSION = "version"
+from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
+from .const import DOMAIN, URL, MAC, SECURE, TIMEOUT, CONF_VERSION
+import urllib
+import requests
+import time
+import random
+import string
+import logging
+
 _LOGGER = logging.getLogger(__name__)
 
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    """Set up the switch from config."""
-
-    host = config.get(CONF_HOST)
-    url = config.get(URL) or ""
-    mac = config.get(MAC) or ""
-    username = config.get(USERNAME) or ""
-    password = config.get(PASSWORD) or ""
-    secure = config.get(SECURE) or False
-    timeout = config.get(TIMEOUT) or 5
-    version = config.get(VERSION) or 6
-    if DATA_KEY not in hass.data:
-        hass.data[DATA_KEY] = {}
-    device = SynologySwitch(url, mac, username, password, secure, timeout, version)
-    hass.data[DATA_KEY][host] = device
-    devices = []
-    devices.append(device)
-    async_add_entities(devices, update_before_add=True)
 
 class Synology:
     def __init__(self, url, mac, username, password, secure=False, timeout=5, version=6):
@@ -41,18 +22,16 @@ class Synology:
         self.version = version
         self.timeout = timeout
         self.auth = {
-            "sid": "", #session id
-            "time": 0, #unix time
-            "timeout": 15 * 60 #in sec
+            "sid": "",
+            "time": 0,
+            "timeout": 15 * 60
         }
 
-    def isLoggedIn(self):
-        """check if the sid is still valid"""
+    def is_logged_in(self):
         return self.auth["sid"] != "" and (self.auth["time"] + self.auth["timeout"] > time.time())
 
     def login(self):
-        """Login to your diskstation"""
-        if self.isLoggedIn():
+        if self.is_logged_in():
             return True
         params = urllib.parse.urlencode({
             "api": "SYNO.API.Auth",
@@ -68,15 +47,15 @@ class Synology:
             resp = requests.get(self.url + "/webapi/auth.cgi?" + params, verify=self.secure)
             sid = resp.json()["data"]["sid"]
             self.auth["time"] = int(time.time())
-        except:
+        except Exception as e:
+            _LOGGER.error("Login failed: %s", e)
             sid = ""
-        #_LOGGER.error("login sid %s", sid)
         self.auth["sid"] = sid
-        return sid == ""
+        return sid != ""
 
     def shutdown(self):
         self.login()
-        apiUrl = self.version >= 6 and "/webapi/entry.cgi?" or "/webapi/dsm/system.cgi?"
+        api_url = self.version >= 6 and "/webapi/entry.cgi?" or "/webapi/dsm/system.cgi?"
         params = urllib.parse.urlencode({
             "api": self.version >= 6 and "SYNO.Core.System" or "SYNO.DSM.System",
             "method": "shutdown",
@@ -84,69 +63,65 @@ class Synology:
             "_sid": self.auth["sid"]
         })
         try:
-            resp = requests.get(self.url + apiUrl + params, verify=self.secure)
-        except:
-            _LOGGER.info("shutdown requests except.")
+            resp = requests.get(self.url + api_url + params, verify=self.secure)
+        except Exception as e:
+            _LOGGER.error("Shutdown failed: %s", e)
 
-    def getPowerState(self):
+    def get_power_state(self):
         try:
             resp = requests.get(self.url + "/webman/index.cgi", timeout=self.timeout, verify=self.secure)
             if resp and resp.status_code == 200:
                 return True
             else:
                 return False
-        except:
+        except Exception as e:
+            _LOGGER.debug("Power state check failed: %s", e)
             return False
 
-    def wakeUp(self):
+    def wake_up(self):
         send_magic_packet(self.mac)
-        return
 
-class SynologySwitch(SwitchEntity):
 
-    def __init__(self, url, mac, username, password, secure=False, timeout=5, version=6):
-        #_LOGGER.error("init %s %s %s %s %d %d %d", url, mac, username, password, secure, timeout, version)
+class SynologySwitchEntity(SwitchEntity):
+    _attr_should_poll = True
+
+    def __init__(self, config_entry):
+        self.config_entry = config_entry
+        self.url = config_entry.data[URL]
+        self.mac = config_entry.data[MAC]
+        self.username = config_entry.data[CONF_USERNAME]
+        self.password = config_entry.data[CONF_PASSWORD]
+        self.secure = config_entry.data.get(SECURE, False)
+        self.timeout = config_entry.data.get(TIMEOUT, 5)
+        self.version = config_entry.data.get(CONF_VERSION, 6)
+        self.synology = Synology(
+            self.url, self.mac, self.username, self.password,
+            self.secure, self.timeout, self.version
+        )
         self._is_on = False
-        self.synology = Synology(url, mac, username, password, secure, timeout, version)
-        if len(mac) == 12:
-            self._name = "synology" + mac
-        elif len(mac) == 17:
-            sep = mac[2]
-            self._name = "synology" + mac.replace(sep, '')
-        else:
-            self._name = ""
-
-    @property
-    def should_poll(self):
-        """Poll the plug."""
-        return True
-
-    @property
-    def name(self):
-        """Return the name."""
-        return self._name
+        mac_clean = self.mac.replace(":", "").replace("-", "")
+        self._attr_unique_id = f"synology_{mac_clean}"
+        self._attr_name = f"Synology {self.mac[:17]}"
 
     @property
     def available(self):
-        """Return true when state is known."""
         return True
 
     @property
     def is_on(self):
-        """If the switch is currently on or off."""
         return self._is_on
 
     async def async_turn_on(self, **kwargs):
-        """Turn the plug on."""
-        self.synology.wakeUp()
+        await self.hass.async_add_executor_job(self.synology.wake_up)
         self._is_on = True
 
-    def turn_off(self, **kwargs):
-        """Turn the plug off."""
-        self.synology.shutdown()
+    async def async_turn_off(self, **kwargs):
+        await self.hass.async_add_executor_job(self.synology.shutdown)
         self._is_on = False
 
-    def update(self):
-        """Fetch state from the device."""
-        self._is_on = self.synology.getPowerState()
+    async def async_update(self):
+        self._is_on = await self.hass.async_add_executor_job(self.synology.get_power_state)
 
+
+async def async_setup_entry(hass, config_entry, async_add_entities):
+    async_add_entities([SynologySwitchEntity(config_entry)], update_before_add=True)

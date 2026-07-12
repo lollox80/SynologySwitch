@@ -10,5 +10,7 @@
   "codeowners": [
     "@billhu1996"
   ],
-  "version": "1.0.0"
+  "config_flow": true,
+  "iot_class": "local_polling",
+  "version": "2.0.0"
 }

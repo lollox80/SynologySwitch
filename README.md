@@ -1,7 +1,7 @@
 # SynologySwitch
 Synology switch for Home Assistant. Control your Synology Diskstation with Home Assistant.
 
->supports DSM 5.x and 6.x
+>supports DSM 5.x, 6.x and 7.x
 
 ## How to use
 
@@ -13,32 +13,24 @@ Using [Home Assistant Community Store](https://hacs.xyz/)
 
 OR
 
-Copy `__init__.py` and `switch.py` to `homeassistant/custom_components/synology_switch/`
+Copy all files from `custom_components/synology_switch/` to `homeassistant/custom_components/synology_switch/`
 
 ### 2
 
-Edit `configuration.yaml`
+Go to **Settings > Devices & Services > Add Integration** and search for **Synology Switch**
 
-Example:
+### Configuration Parameters
 
-```
-switch:
-  - platform: synology_switch
-    url: https://www.example.com:5001
-    mac: 00:11:22:33:EE:FF
-    username: username
-    password: pass
-    secure: False
-```
+| Parameter | Required | Default | Description |
+|-----------|----------|---------|-------------|
+| url | Yes | - | DSM URL (e.g., https://192.168.1.2:5001) |
+| mac | Yes | - | MAC Address for Wake-on-LAN |
+| username | Yes | - | DSM username |
+| password | Yes | - | DSM password |
+| secure | No | False | Verify SSL certificate |
+| timeout | No | 5 | Connection timeout in seconds |
+| version | No | 7 | DSM version (5, 6, or 7) |
 
-- url
-
-    https://www.example.com:5001
-
-    http://192.168.1.2:5000
-    
-    https://192.168.1.2:5001
-    
 ## Functions
 
 - wake up (wake-on-lan has to be active) your diskstation
@@ -50,8 +42,7 @@ This plugin does not support 2FA. If you have enabled 2FA, consider creating ano
 
 ## Issues
 
-Please double check your config.json before opening an issue.
-When you open an issue provide a detailed description of your problem and add your config.json (without password).
+When you open an issue provide a detailed description of your problem.
 
 ## Support
 
@@ -60,4 +51,3 @@ PRs are always welcome.
 ## Thanks
 
 [Homebridge-Synology](https://github.com/stfnhmplr/homebridge-synology)
-

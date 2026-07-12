@@ -3,5 +3,5 @@
     "domains": [
         "switch"
     ],
-    "homeassistant": "0.100.0"
+    "homeassistant": "2025.1.0"
 }
