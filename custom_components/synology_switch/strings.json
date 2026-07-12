@@ -1,0 +1,23 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add Synology Switch",
+        "description": "Configure your Synology DiskStation for power control.",
+        "data": {
+          "url": "DSM URL (e.g., https://192.168.1.2:5001)",
+          "mac": "MAC Address",
+          "username": "Username",
+          "password": "Password",
+          "secure": "Verify SSL certificate",
+          "timeout": "Timeout (seconds)",
+          "version": "DSM Version (5, 6, or 7)"
+        }
+      }
+    },
+    "error": {
+      "invalid_mac": "Invalid MAC address format",
+      "connection_error": "Failed to connect to Synology"
+    }
+  }
+}

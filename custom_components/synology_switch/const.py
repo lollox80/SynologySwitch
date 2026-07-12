@@ -1,0 +1,8 @@
+DOMAIN = "synology_switch"
+URL = "url"
+MAC = "mac"
+USERNAME = "username"
+PASSWORD = "password"
+SECURE = "secure"
+TIMEOUT = "timeout"
+CONF_VERSION = "version"
