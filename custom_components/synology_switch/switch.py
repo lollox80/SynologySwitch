@@ -88,6 +88,22 @@ class SynologySwitchEntity(SwitchEntity):
 
     def __init__(self, config_entry):
         self.config_entry = config_entry
+        self._update_from_config_entry(config_entry)
+        self._is_on = False
+        mac_clean = self.mac.replace(":", "").replace("-", "")
+        self._attr_unique_id = f"synology_{mac_clean}_power"
+        self._attr_translation_key = "power"
+        self._attr_has_entity_name = True
+        self._attr_icon = "mdi:server"
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, mac_clean)},
+            name=f"Synology NAS ({self.mac[:17]})",
+            manufacturer="Synology",
+            model="DiskStation",
+            configuration_url=self.url,
+        )
+
+    def _update_from_config_entry(self, config_entry):
         self.url = config_entry.data[URL]
         self.mac = config_entry.data[MAC]
         self.username = config_entry.data[CONF_USERNAME]
@@ -98,18 +114,6 @@ class SynologySwitchEntity(SwitchEntity):
         self.synology = Synology(
             self.url, self.mac, self.username, self.password,
             self.secure, self.timeout, self.version
-        )
-        self._is_on = False
-        mac_clean = self.mac.replace(":", "").replace("-", "")
-        self._attr_unique_id = f"synology_{mac_clean}_power"
-        self._attr_translation_key = "power"
-        self._attr_has_entity_name = True
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, mac_clean)},
-            name=f"Synology NAS ({self.mac[:17]})",
-            manufacturer="Synology",
-            model="DiskStation",
-            configuration_url=self.url,
         )
 
     @property
@@ -130,6 +134,9 @@ class SynologySwitchEntity(SwitchEntity):
 
     async def async_update(self):
         self._is_on = await self.hass.async_add_executor_job(self.synology.get_power_state)
+
+    async def async_update_config_entry(self, config_entry):
+        self._update_from_config_entry(config_entry)
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
