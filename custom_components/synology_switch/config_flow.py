@@ -14,7 +14,7 @@ DATA_SCHEMA = vol.Schema({
     vol.Required(CONF_PASSWORD): str,
     vol.Optional(SECURE, default=False): bool,
     vol.Optional(TIMEOUT, default=5): int,
-    vol.Required(CONF_VERSION): vol.In([5, 6, 7]),
+    vol.Required(CONF_VERSION): vol.All(vol.Coerce(int), vol.In([5, 6, 7])),
 })
 
 MAC_REGEX = re.compile(r'^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$|^[0-9A-Fa-f]{12}$')
