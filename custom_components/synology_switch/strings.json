@@ -17,7 +17,15 @@
     },
     "error": {
       "invalid_mac": "Invalid MAC address format",
-      "connection_error": "Failed to connect to Synology"
+      "connection_error": "Failed to connect to Synology",
+      "unknown_error": "An unknown error occurred"
+    }
+  },
+  "entity": {
+    "switch": {
+      "power": {
+        "name": "Power"
+      }
     }
   }
 }

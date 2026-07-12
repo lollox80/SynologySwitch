@@ -1,0 +1,69 @@
+{
+    "config": {
+        "flow_title": "Synology Switch",
+        "step": {
+            "user": {
+                "title": "Add Synology Switch",
+                "description": "Configure your Synology DiskStation for power control.",
+                "data": {
+                    "url": "DSM URL",
+                    "mac": "MAC Address",
+                    "username": "Username",
+                    "password": "Password",
+                    "secure": "Verify SSL certificate",
+                    "timeout": "Timeout (seconds)",
+                    "version": "DSM Version"
+                }
+            },
+            "reconfigure": {
+                "title": "Reconfigure Synology Switch",
+                "description": "Modify the power control configuration for your Synology DiskStation.",
+                "data": {
+                    "url": "DSM URL",
+                    "mac": "MAC Address",
+                    "username": "Username",
+                    "password": "Password",
+                    "secure": "Verify SSL certificate",
+                    "timeout": "Timeout (seconds)",
+                    "version": "DSM Version"
+                }
+            }
+        },
+        "error": {
+            "invalid_mac": "Invalid MAC address format",
+            "connection_error": "Failed to connect to Synology",
+            "unknown_error": "An unknown error occurred"
+        },
+        "abort": {
+            "already_configured": "This device is already configured."
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Edit Synology Switch Configuration",
+                "description": "Modify the power control configuration for your Synology DiskStation.",
+                "data": {
+                    "url": "DSM URL",
+                    "mac": "MAC Address",
+                    "username": "Username",
+                    "password": "Password",
+                    "secure": "Verify SSL certificate",
+                    "timeout": "Timeout (seconds)",
+                    "version": "DSM Version"
+                }
+            }
+        },
+        "error": {
+            "invalid_mac": "Invalid MAC address format",
+            "unknown_error": "An unknown error occurred"
+        }
+    },
+    "entity": {
+        "switch": {
+            "power": {
+                "name": "Power"
+            }
+        }
+    }
+}

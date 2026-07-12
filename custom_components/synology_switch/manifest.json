@@ -6,11 +6,13 @@
   "requirements": [
     "wakeonlan>=1.1.6"
   ],
-  "dependencies": [],
+  "dependencies": ["persistent_notification"],
   "codeowners": [
     "@billhu1996"
   ],
   "config_flow": true,
+  "integration_type": "hub",
   "iot_class": "local_polling",
+  "loggers": ["synology_switch"],
   "version": "2.0.0"
 }
