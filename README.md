@@ -31,6 +31,14 @@ Go to **Settings > Devices & Services > Add Integration** and search for **Synol
 | timeout | No | 5 | Connection timeout in seconds |
 | version | No | 7 | DSM version (5, 6, or 7) |
 
+## Options
+
+After the integration is set up, click the gear icon on the integration card (**Settings > Devices & Services > Synology Switch > Configure**) to edit any of the parameters above, plus:
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| scan_interval | 15 | How often (in seconds, 5-3600) the switch polls the NAS to check whether it's powered on. Changes apply immediately, no Home Assistant restart needed. |
+
 ## Functions
 
 - wake up (wake-on-lan has to be active) your diskstation
