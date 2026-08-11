@@ -50,7 +50,8 @@
                     "password": "Password",
                     "secure": "Verify SSL certificate",
                     "timeout": "Timeout (seconds)",
-                    "version": "DSM Version"
+                    "version": "DSM Version",
+                    "scan_interval": "Polling interval (seconds)"
                 }
             }
         },

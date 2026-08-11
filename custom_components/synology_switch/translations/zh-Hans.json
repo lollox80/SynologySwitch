@@ -1,0 +1,70 @@
+{
+    "config": {
+        "flow_title": "群晖开关",
+        "step": {
+            "user": {
+                "title": "添加群晖开关",
+                "description": "配置您的群晖 DiskStation 以进行电源控制。",
+                "data": {
+                    "url": "DSM 地址",
+                    "mac": "MAC 地址",
+                    "username": "用户名",
+                    "password": "密码",
+                    "secure": "验证 SSL 证书",
+                    "timeout": "超时时间（秒）",
+                    "version": "DSM 版本"
+                }
+            },
+            "reconfigure": {
+                "title": "重新配置群晖开关",
+                "description": "修改群晖 DiskStation 的电源控制配置。",
+                "data": {
+                    "url": "DSM 地址",
+                    "mac": "MAC 地址",
+                    "username": "用户名",
+                    "password": "密码",
+                    "secure": "验证 SSL 证书",
+                    "timeout": "超时时间（秒）",
+                    "version": "DSM 版本"
+                }
+            }
+        },
+        "error": {
+            "invalid_mac": "MAC 地址格式无效",
+            "connection_error": "无法连接到群晖",
+            "unknown_error": "发生未知错误"
+        },
+        "abort": {
+            "already_configured": "该设备已配置。"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "编辑群晖开关配置",
+                "description": "修改群晖 DiskStation 的电源控制配置。",
+                "data": {
+                    "url": "DSM 地址",
+                    "mac": "MAC 地址",
+                    "username": "用户名",
+                    "password": "密码",
+                    "secure": "验证 SSL 证书",
+                    "timeout": "超时时间（秒）",
+                    "version": "DSM 版本",
+                    "scan_interval": "轮询间隔（秒）"
+                }
+            }
+        },
+        "error": {
+            "invalid_mac": "MAC 地址格式无效",
+            "unknown_error": "发生未知错误"
+        }
+    },
+    "entity": {
+        "switch": {
+            "power": {
+                "name": "电源"
+            }
+        }
+    }
+}
