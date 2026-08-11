@@ -6,7 +6,6 @@
   "requirements": [
     "wakeonlan>=1.1.6"
   ],
-  "dependencies": ["persistent_notification"],
   "codeowners": [
     "@billhu1996"
   ],
