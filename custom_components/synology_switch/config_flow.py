@@ -44,22 +44,9 @@ class SynologySwitchConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 _LOGGER.error("Config flow error: %s", e)
                 errors["base"] = "unknown_error"
 
-        data_schema = DATA_SCHEMA
-        if self.config_entry:
-            current_data = self.config_entry.data
-            data_schema = vol.Schema({
-                vol.Required(URL, default=current_data.get(URL)): str,
-                vol.Required(MAC, default=current_data.get(MAC)): str,
-                vol.Required(CONF_USERNAME, default=current_data.get(CONF_USERNAME)): str,
-                vol.Required(CONF_PASSWORD, default=current_data.get(CONF_PASSWORD)): str,
-                vol.Optional(SECURE, default=current_data.get(SECURE, False)): bool,
-                vol.Optional(TIMEOUT, default=current_data.get(TIMEOUT, 5)): int,
-                vol.Required(CONF_VERSION, default=current_data.get(CONF_VERSION, 7)): vol.All(vol.Coerce(int), vol.In([5, 6, 7])),
-            })
-
         return self.async_show_form(
             step_id="user",
-            data_schema=data_schema,
+            data_schema=DATA_SCHEMA,
             errors=errors,
         )
 
