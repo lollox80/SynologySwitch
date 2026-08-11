@@ -1,4 +1,5 @@
 from wakeonlan import send_magic_packet
+from datetime import timedelta
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -11,6 +12,8 @@ import string
 import logging
 
 _LOGGER = logging.getLogger(__name__)
+
+SCAN_INTERVAL = timedelta(seconds=60)
 
 
 class Synology:
