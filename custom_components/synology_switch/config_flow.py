@@ -56,12 +56,8 @@ class SynologySwitchConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 mac = user_input[MAC]
                 if MAC_REGEX.match(mac):
-                    self.hass.config_entries.async_update_entry(
+                    return self.async_update_reload_and_abort(
                         self.config_entry,
-                        data=user_input,
-                    )
-                    return self.async_create_entry(
-                        title=f"Synology {mac[:17]}",
                         data=user_input,
                     )
                 else:
@@ -104,6 +100,7 @@ class SynologySwitchOptionsFlow(config_entries.OptionsFlow):
                         self.config_entry,
                         data=user_input,
                     )
+                    await self.hass.config_entries.async_reload(self.config_entry.entry_id)
                     return self.async_create_entry(title="", data={})
                 else:
                     errors[MAC] = "invalid_mac"
