@@ -1,9 +1,10 @@
-from wakeonlan import send_magic_packet
 from datetime import timedelta
+from wakeonlan import send_magic_packet
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 from homeassistant.helpers.device_registry import DeviceInfo
-from .const import DOMAIN, URL, MAC, SECURE, TIMEOUT, CONF_VERSION
+from homeassistant.helpers.event import async_track_time_interval
+from .const import DOMAIN, URL, MAC, SECURE, TIMEOUT, CONF_VERSION, SCAN_INTERVAL_CONF, DEFAULT_SCAN_INTERVAL
 import urllib
 import requests
 import time
@@ -12,8 +13,6 @@ import string
 import logging
 
 _LOGGER = logging.getLogger(__name__)
-
-SCAN_INTERVAL = timedelta(seconds=60)
 
 
 class Synology:
@@ -87,10 +86,11 @@ class Synology:
 
 
 class SynologySwitchEntity(SwitchEntity):
-    _attr_should_poll = True
+    _attr_should_poll = False
 
     def __init__(self, config_entry):
         self.config_entry = config_entry
+        self._remove_interval_listener = None
         self._update_from_config_entry(config_entry)
         self._is_on = False
         mac_clean = self.mac.replace(":", "").replace("-", "")
@@ -114,6 +114,7 @@ class SynologySwitchEntity(SwitchEntity):
         self.secure = config_entry.data.get(SECURE, False)
         self.timeout = config_entry.data.get(TIMEOUT, 5)
         self.version = config_entry.data.get(CONF_VERSION, 7)
+        self.scan_interval = config_entry.data.get(SCAN_INTERVAL_CONF, DEFAULT_SCAN_INTERVAL)
         self.synology = Synology(
             self.url, self.mac, self.username, self.password,
             self.secure, self.timeout, self.version
@@ -130,16 +131,41 @@ class SynologySwitchEntity(SwitchEntity):
     async def async_turn_on(self, **kwargs):
         await self.hass.async_add_executor_job(self.synology.wake_up)
         self._is_on = True
+        self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs):
         await self.hass.async_add_executor_job(self.synology.shutdown)
         self._is_on = False
+        self.async_write_ha_state()
 
     async def async_update(self):
         self._is_on = await self.hass.async_add_executor_job(self.synology.get_power_state)
 
+    async def async_added_to_hass(self):
+        self._schedule_polling()
+
+    async def async_will_remove_from_hass(self):
+        self._cancel_polling()
+
+    def _schedule_polling(self):
+        self._cancel_polling()
+        self._remove_interval_listener = async_track_time_interval(
+            self.hass, self._handle_scheduled_update, timedelta(seconds=self.scan_interval)
+        )
+
+    def _cancel_polling(self):
+        if self._remove_interval_listener is not None:
+            self._remove_interval_listener()
+            self._remove_interval_listener = None
+
+    async def _handle_scheduled_update(self, now):
+        await self.async_update()
+        self.async_write_ha_state()
+
     async def async_update_config_entry(self, config_entry):
         self._update_from_config_entry(config_entry)
+        if self.hass is not None:
+            self._schedule_polling()
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):

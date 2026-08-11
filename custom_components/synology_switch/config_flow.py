@@ -4,7 +4,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import callback
-from .const import DOMAIN, URL, MAC, SECURE, TIMEOUT, CONF_VERSION
+from .const import DOMAIN, URL, MAC, SECURE, TIMEOUT, CONF_VERSION, SCAN_INTERVAL_CONF, DEFAULT_SCAN_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -117,6 +117,7 @@ class SynologySwitchOptionsFlow(config_entries.OptionsFlow):
             vol.Optional(SECURE, default=current_data.get(SECURE, False)): bool,
             vol.Optional(TIMEOUT, default=current_data.get(TIMEOUT, 5)): int,
             vol.Required(CONF_VERSION, default=current_data.get(CONF_VERSION, 7)): vol.All(vol.Coerce(int), vol.In([5, 6, 7])),
+            vol.Optional(SCAN_INTERVAL_CONF, default=current_data.get(SCAN_INTERVAL_CONF, DEFAULT_SCAN_INTERVAL)): vol.All(vol.Coerce(int), vol.Range(min=5, max=3600)),
         })
 
         return self.async_show_form(

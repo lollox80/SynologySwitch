@@ -6,3 +6,5 @@ PASSWORD = "password"
 SECURE = "secure"
 TIMEOUT = "timeout"
 CONF_VERSION = "version"
+SCAN_INTERVAL_CONF = "scan_interval"
+DEFAULT_SCAN_INTERVAL = 15
