@@ -16,6 +16,7 @@ DATA_SCHEMA = vol.Schema({
     vol.Optional(SECURE, default=False): bool,
     vol.Optional(TIMEOUT, default=5): int,
     vol.Required(CONF_VERSION): vol.All(vol.Coerce(int), vol.In([5, 6, 7])),
+    vol.Optional(SCAN_INTERVAL_CONF, default=DEFAULT_SCAN_INTERVAL): vol.All(vol.Coerce(int), vol.Range(min=5, max=3600)),
 })
 
 MAC_REGEX = re.compile(r'^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$|^[0-9A-Fa-f]{12}$')
@@ -75,6 +76,7 @@ class SynologySwitchConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             vol.Optional(SECURE, default=current_data.get(SECURE, False)): bool,
             vol.Optional(TIMEOUT, default=current_data.get(TIMEOUT, 5)): int,
             vol.Required(CONF_VERSION, default=current_data.get(CONF_VERSION, 7)): vol.All(vol.Coerce(int), vol.In([5, 6, 7])),
+            vol.Optional(SCAN_INTERVAL_CONF, default=current_data.get(SCAN_INTERVAL_CONF, DEFAULT_SCAN_INTERVAL)): vol.All(vol.Coerce(int), vol.Range(min=5, max=3600)),
         })
 
         return self.async_show_form(
