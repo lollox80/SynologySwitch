@@ -12,7 +12,8 @@
                     "password": "密码",
                     "secure": "验证 SSL 证书",
                     "timeout": "超时时间（秒）",
-                    "version": "DSM 版本"
+                    "version": "DSM 版本",
+                    "scan_interval": "轮询间隔（秒）"
                 }
             },
             "reconfigure": {
@@ -25,7 +26,8 @@
                     "password": "密码",
                     "secure": "验证 SSL 证书",
                     "timeout": "超时时间（秒）",
-                    "version": "DSM 版本"
+                    "version": "DSM 版本",
+                    "scan_interval": "轮询间隔（秒）"
                 }
             }
         },

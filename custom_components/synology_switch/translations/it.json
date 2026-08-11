@@ -12,7 +12,8 @@
                     "password": "Password",
                     "secure": "Verifica certificato SSL",
                     "timeout": "Timeout (secondi)",
-                    "version": "Versione DSM"
+                    "version": "Versione DSM",
+                    "scan_interval": "Intervallo di polling (secondi)"
                 }
             },
             "reconfigure": {
@@ -25,7 +26,8 @@
                     "password": "Password",
                     "secure": "Verifica certificato SSL",
                     "timeout": "Timeout (secondi)",
-                    "version": "Versione DSM"
+                    "version": "Versione DSM",
+                    "scan_interval": "Intervallo di polling (secondi)"
                 }
             }
         },
